@@ -34,7 +34,7 @@ args.append('--batch_size=8')
 args.append('--do_lower_case=False')
 args.append('--attention=False')
 args.append('--mask_underscore=False')
-# subprocess.run(args)
+subprocess.run(args)
 
 
 
