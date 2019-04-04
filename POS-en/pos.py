@@ -51,7 +51,11 @@ for layer in range(12):
     text_outputs = [layer_outputs['arr_' + str(x)] for x in range(data.shape[0])] # list of arrays of shape (num_tokens, num_neurons) 
 
 
-# PCA
+    pca = SupervisedPCARegressor(n_components = np.min(outputs.shape)) # it works only if n_components <= min(num_features, num_examples)
+    # pca = SupervisedPCARegressor(threshold=0.1)
+    pca.fit(outputs, labels)
+
+    pca_outputs = pca.get_transformed_data(outputs)
 
     class_vectors = [[] for _ in range(max_label)]
     for t_idx, text in enumerate(data):
