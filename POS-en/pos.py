@@ -6,8 +6,9 @@ sys.path.insert(0, '..')
 sys.path.insert(0, '../supervisedPCA-Python')
 from supervised_pca import BaseSupervisedPCA
 from metrics import *
+from bert.tokenization import FullTokenizer
 
-data = np.load('brown_100_sents.npy')# [:20] # array of lists [text, target_word_idx, correct_word_idx]
+data = np.load('brown_100_sents.npy')[:2] # array of lists [text, target_word_idx, correct_word_idx]
 with open('sentences', 'w') as f:
     for text in data:
             string = ''
@@ -17,6 +18,20 @@ with open('sentences', 'w') as f:
 
 bert = '../cased_L-12_H-768_A-12/'
 layers = '0,1,2,3,4,5,6,7,8,9,10,11'
+
+bert_tokens = []
+token_map = []
+tokenizer = FullTokenizer(vocab_file=bert + 'vocab.txt', do_lower_case=False)
+
+for text in data:
+    text_tokens = ['[CLS]']
+    text_map = []
+    for word in text:
+        text_map.append(len(text_tokens))
+        text_tokens.extend(tokenizer.tokenize(word[0]))
+
+    token_map.append(text_map)
+    bert_tokens.append(text_tokens)
 
 args = ['python', '../bert/extract_features.py']
 args.append('--input_file=sentences')
@@ -31,6 +46,7 @@ args.append('--do_lower_case=False')
 args.append('--attention=False')
 args.append('--mask_underscore=False')
 subprocess.run(args)
+
 
 pos_to_idx = {}
 max_label = 0
@@ -48,7 +64,14 @@ for text in data:
 layer_metrics = []
 for layer in range(12):
     layer_outputs = np.load('POS_layer_' + str(layer) + '.npz')
-    text_outputs = [layer_outputs['arr_' + str(x)] for x in range(data.shape[0])] # list of arrays of shape (num_tokens, num_neurons) 
+    text_outputs_raw = [layer_outputs['arr_' + str(x)] for x in range(data.shape[0])] # list of arrays of shape (num_tokens, num_neurons) 
+
+    # remove vectors from excess tokens
+    text_outputs = []
+    for idx, text_output in enumerate(text_outputs_raw):
+        text_outputs.append(text_output[token_map[idx]])
+
+
 
 
     pca = SupervisedPCARegressor(n_components = np.min(outputs.shape)) # it works only if n_components <= min(num_features, num_examples)
