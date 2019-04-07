@@ -4,7 +4,7 @@ from sklearn.linear_model import LogisticRegression
 import sys
 sys.path.insert(0, '..')
 sys.path.insert(0, '../supervisedPCA-Python')
-from supervised_pca import BaseSupervisedPCA
+from supervised_pca import SupervisedPCARegressor
 from metrics import *
 from bert.tokenization import FullTokenizer
 
@@ -61,7 +61,9 @@ for text in data:
     correct.append(labels)
 
 
-layer_metrics = []
+layer_cls_metrics = []
+layer_v_metrics = []
+layer_avg_dist_metrics = []
 for layer in range(12):
     layer_outputs = np.load('POS_layer_' + str(layer) + '.npz')
     text_outputs_raw = [layer_outputs['arr_' + str(x)] for x in range(data.shape[0])] # list of arrays of shape (num_tokens, num_neurons) 
@@ -72,25 +74,27 @@ for layer in range(12):
         text_outputs.append(text_output[token_map[idx]])
 
 
+    # FIX PCA
 
-
-    pca = SupervisedPCARegressor(n_components = np.min(outputs.shape)) # it works only if n_components <= min(num_features, num_examples)
+    # pca = SupervisedPCARegressor(n_components = np.min(outputs.shape)) # it works only if n_components <= min(num_features, num_examples)
     # pca = SupervisedPCARegressor(threshold=0.1)
-    pca.fit(outputs, labels)
+    # pca.fit(outputs, labels)
 
-    pca_outputs = pca.get_transformed_data(outputs)
+    # pca_outputs = pca.get_transformed_data(outputs)
 
     class_vectors = [[] for _ in range(max_label)]
     for t_idx, text in enumerate(data):
         for w_idx, word in enumerate(text):
             # do something with multiple tokens per word, for example all tokens are the same pos
             class_vectors[pos_to_idx[word[1]]].append(text_outputs[t_idx][w_idx])
-    layer_metrics.append(classifier_metric(class_vectors))
+    layer_cls_metrics.append(classifier_metric(class_vectors))
+    layer_v_metrics.append(cluster_metrics(class_vectors)[2])
+    layer_avg_dist_metrics.append(distance_metrics(class_vectors)[2])
 
 
 metrics = []
-for idx, metric in enumerate(layer_metrics):
-    metrics.append((f'Layer {idx} : {metric}', metric))
+for idx, cls_metric in enumerate(layer_cls_metrics):
+    metrics.append((f'Layer {idx + 1} : clas_score {cls_metric}, v_measure {layer_v_metrics[idx]}, average_distance between classes {layer_avg_dist_metrics[idx]}', cls_metric, layer_v_metrics[idx], layer_avg_dist_metrics[idx]))
 
 metrics = sorted(metrics, key=lambda a: a[1], reverse=True)
 for metric in metrics:
