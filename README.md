@@ -1,19 +1,35 @@
-Для работы скриптов требуется чекпоинт BERT (можно скачать с https://storage.googleapis.com/bert_models/2018_10_18/cased_L-12_H-768_A-12.zip). 
-Во всех скриптах можно не указывать аргументов, тогда они будут искать папку с именем `cased_L-12_H-768_A-12`, в которой должен лежать чекпоинт (по ссылке выше скачивается архив с такой папкой) и возьмут готовые входные файлы.
+Для работы скриптов требуется чекпоинт BERT (можно скачать с https://storage.googleapis.com/bert_models/2018_10_18/cased_L-12_H-768_A-12.zip), разархивировать в текущую директорию. 
+
 В папке `anaphora` скрипт `anaphora.py` запускается так:
 ```
-python anaphora.py [input_file] [bert_checkpoint_folder] [number_of_layers]
+cd anaphora
+python anaphora.py 
 ```
 
-В папках `POS`, `sentiment` и `WSI` скрипты с такими же названиями запускаются так (на примере `sentiment.py`):
+В папке `sentiment` скрипт `sentiment.py`
 ```
-bokeh serve --show sentiment.py --args [input_file] [bert_checkpoint_folder] [number_of_layers]
+cd sentiment
+bokeh serve --show sentiment.py --port [port_num]
+``` 
+В папке `POS` скрипт `pos.py`
+```
+cd POS
+bokeh serve --show pos.py --port [port_num]
+``` 
+В папке `WSI` скрипт `wsi.py`
+```
+cd WSI
+bokeh serve --show wsi.py --port [port_num]
 ``` 
 
-В папке `Attention visualizer` скрипт `attention.py` запускается так:
+В папке `Attention_visualizer` скрипт `attention.py` запускается так:
 ```
-bokeh serve --show attention.py --args [bert_checkpoint_folder] [number_of_layers]
+cd Attention_visualizer
+bokeh serve --show attention.py --port [port_num]
 ```
 Он открывает страницу, на которой в поле надо ввести текст, одно из слов которого заменено на _. После нажатия кнопки "Обработать" выдастся визуализация внимения на разных слоях со слова, замененного на _.
 
-(требуется Bokeh версии 1.0.2)
+# Требуемые библиотеки:
+bokeh 1.0.2
+numpy >= 1.15.4
+scikit-learn >= 0.20.1
