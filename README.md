@@ -9,4 +9,10 @@ python anaphora.py [input_file] [bert_checkpoint_folder] [number_of_layers]
 ```
 bokeh serve --show sentiment.py --args [input_file] [bert_checkpoint_folder] [number_of_layers]
 ``` 
+
+В папке `Attention visualizer` скрипт `attention.py` запускается так:
+```
+bokeh serve --show attention.py --args [bert_checkpoint_folder] [number_of_layers]
+```
+Он открывает страницу, на которой в поле надо ввести текст, одно из слов которого заменено на _. После нажатия кнопки "Обработать" выдастся визуализация внимения на разных слоях со слова, замененного на _.
 (требуется Bokeh версии 1.0.2)

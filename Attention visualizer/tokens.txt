@@ -1,0 +1,6 @@
+[CLS]
+I
+[MASK]
+him
+[SEP]
+
