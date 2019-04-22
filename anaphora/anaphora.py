@@ -48,7 +48,7 @@ args.append('--batch_size=8')
 args.append('--do_lower_case=False')
 args.append('--attention=True')
 args.append('--mask_underscore=False')
-# subprocess.run(args)
+subprocess.run(args)
 
 # correct = [[int(data[i][2])] for i in range(data.shape[0])]
 correct = [list(map(int, example[2:])) for example in data]
