@@ -31,5 +31,7 @@ bokeh serve --show attention.py --port [port_num]
 
 # Требуемые библиотеки:
 bokeh 1.0.2
+
 numpy >= 1.15.4
+
 scikit-learn >= 0.20.1
