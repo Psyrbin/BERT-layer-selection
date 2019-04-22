@@ -420,7 +420,7 @@ def main(_):
         else:
           results[layer_index].append(result['layer_output_' + str(j)][:len(feature.tokens),:])
           # np.save(FLAGS.output_file + '_layer_' + str(layer_index), )
-    with open('../tokens.txt', 'w') as f:
+    with open('tokens.txt', 'w') as f:
       for tok_str in text_tokens:
           f.write(tok_str + '\n')
     for layer_index, value in results.items():

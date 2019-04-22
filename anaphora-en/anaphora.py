@@ -5,14 +5,21 @@ sys.path.insert(0, '..')
 from metrics import attention_metric, attention_metric2
 from bert.tokenization import FullTokenizer
 
+if len(sys.argv) == 1:
+    input_file = '100_sents_converted.npy'
+    bert = '../cased_L-12_H-768_A-12/'
+    layers = '0,1,2,3,4,5,6,7,8,9,10,11'
+else:
+    input_file = sys.argv[1]
+    bert = sys.argv[2]
+    layers = '0'
+    for i in range(int(sys.argv[3]) - 1):
+        layers += ',' + str(i+1)
 
-data = np.load('100_sents_converted.npy')# [:1] # array of lists [text, target_word_idx, correct_word_idx]
+data = np.load(input_file)# [:1] # array of lists [text, target_word_idx, correct_word_idx]
 with open('100_texts', 'w') as f:
     for example in data:
         f.write(example[0])
-
-bert = '../cased_L-12_H-768_A-12/'
-layers = '0,1,2,3,4,5,6,7,8,9,10,11'
 
 bert_tokens = []
 token_map = []
@@ -63,6 +70,7 @@ for layer in range(12):
         head_attentions = [text_attentions[i][head, token_map[i][targets[i]]] for i in range(len(text_attentions))]
         # attention_metric checks if highest attention is to the first token of the correct word, input should include only first tokens of every word
         # attention_metric2 checks if highest attention is to any of the tokens of the correct word, input should include all tokens and list mapping word to its first token
+        
         # head_metrics.append(attention_metric(head_attentions, correct))
         head_metrics.append(attention_metric2(head_attentions, correct, token_map))
     layer_metrics.append(head_metrics)
